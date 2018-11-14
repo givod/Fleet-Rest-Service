@@ -22,6 +22,7 @@ namespace Fleet_Management_Web_Service.Controller
         }
 
         [HttpGet]
+        [Route("GetFleets")]
         public ActionResult<Response> GetFleets()
         {
             return
@@ -35,8 +36,10 @@ namespace Fleet_Management_Web_Service.Controller
         }
 
         [HttpPost]
+        [Route("AddFleet")]
         public ActionResult<Response> AddFleet(Fleet fleet)
         {
+            fleet.Id = new Guid();
             return new Response()
             {
                 ResponseCode = HttpStatusCode.Created,
@@ -47,17 +50,40 @@ namespace Fleet_Management_Web_Service.Controller
         }
 
         [HttpDelete]
-        public ActionResult<Response> RemoveFleet(Guid fleetId)
+        [Route("RemoveFleet")]
+        public ActionResult<Response> RemoveFleet(RemoveFleet fleetId)
         {
+            if (fleetId == null)
+            {
+                return new Response()
+                {
+                    ResponseCode = HttpStatusCode.BadRequest,
+                    Message = "Fleet cannot be empty",
+                    Status = false
+                };
+            }
+
+            var fleet = new Guid(fleetId.FleetId);
+
+            if (_dataService.RemoveFleet(fleet))
+            {
+                return new Response()
+                {
+                    ResponseCode = HttpStatusCode.OK,
+                    Message = "Removed Successfully",
+                    Status = true
+                };
+            }
             return new Response()
             {
-                ResponseCode = HttpStatusCode.OK,
-                Message = "Removed Successfully",
-                Status = _dataService.RemoveFleet(fleetId)
+                ResponseCode = HttpStatusCode.NotFound,
+                Message = "Removal not Successful",
+                Status = false
             };
         }
 
         [HttpPut]
+        [Route("UpdateFleet")]
         public ActionResult<Response> UpdateFleet(Fleet fleet)
         {
            return new Response()
@@ -70,6 +96,7 @@ namespace Fleet_Management_Web_Service.Controller
         }
 
         [HttpGet]
+        [Route("GetCategories")]
         public ActionResult<Response> GetCategories()
         {
             return new Response()
@@ -82,6 +109,7 @@ namespace Fleet_Management_Web_Service.Controller
         }
 
         [HttpPost]
+        [Route("AddCategory")]
         public ActionResult<Response> AddCategory(Category category)
         {
           return  new Response()
@@ -94,12 +122,13 @@ namespace Fleet_Management_Web_Service.Controller
         }
 
         [HttpDelete]
-        public ActionResult<Response> RemoveCategory(int id)
+        [Route("RemoveCategory")]
+        public ActionResult<Response> RemoveCategory(RemoveCategory Id)
         {
             return new Response()
             {
                 ResponseCode = HttpStatusCode.OK,
-                Data = _dataService.RemoveCategory(id),
+                Data = _dataService.RemoveCategory(Id.Id),
                 Status = true,
                 Message = "Removed successfully"
             };
