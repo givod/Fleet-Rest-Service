@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet Management Web Service", "Fleet Management Web Service\Fleet Management Web Service.csproj", "{279C9199-0F94-4CB2-BCB8-657AD0E30AB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetManagementTest", "FleetManagementTest\FleetManagementTest.csproj", "{0341BE36-8965-4A3C-819E-7EF57F44F66B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{279C9199-0F94-4CB2-BCB8-657AD0E30AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{279C9199-0F94-4CB2-BCB8-657AD0E30AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{279C9199-0F94-4CB2-BCB8-657AD0E30AB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0341BE36-8965-4A3C-819E-7EF57F44F66B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0341BE36-8965-4A3C-819E-7EF57F44F66B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0341BE36-8965-4A3C-819E-7EF57F44F66B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0341BE36-8965-4A3C-819E-7EF57F44F66B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
