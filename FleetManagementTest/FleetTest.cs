@@ -11,7 +11,7 @@ namespace FleetManagementTest
         private FleetController _controller;
         private IDataRepository _service;
 
-        FleetControllerTest()
+        public FleetControllerTest()
         {
             _service = new DataRepositoryFake();
             _controller = new FleetController(_service);
