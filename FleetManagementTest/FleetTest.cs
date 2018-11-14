@@ -20,7 +20,7 @@ namespace FleetManagementTest
         [Fact]
         public void GetFleet_Return_ResponseOK()
         {
-            var okResult = _controller.GetFleets().Result;
+            var okResult = _controller.GetFleets().Value;
             Assert.IsType<Response>(okResult);
         }
 
@@ -36,7 +36,7 @@ namespace FleetManagementTest
                 Description = "TextFleet",
                 DateAcquired = DateTime.UtcNow
             };
-            var result = _controller.AddFleet(fleet).Result;
+            var result = _controller.AddFleet(fleet).Value;
             Assert.IsType<Response>(result);
         }
 
@@ -52,7 +52,7 @@ namespace FleetManagementTest
                 Description = "XXX123TX",
                 DateAcquired = DateTime.UtcNow
             };
-            var result = _controller.UpdateFleet(fleet).Result;
+            var result = _controller.UpdateFleet(fleet).Value;
             Assert.IsType<Response>(result);
         }
 
@@ -60,7 +60,7 @@ namespace FleetManagementTest
         public void RemoveFleet_Return_ResponseWithStatusofbool()
         {
             var guid = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200");
-            var result = _controller.RemoveFleet(guid).Result;
+            var result = _controller.RemoveFleet(guid).Value;
             Assert.IsType<Response>(result);
         }
 
