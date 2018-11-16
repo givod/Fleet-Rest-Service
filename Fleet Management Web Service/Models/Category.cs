@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace FleetManagementWebService
+namespace FleetManagementWebService.Models
 {
-    public class Category
+    public partial class Category
     {
-        public int Id { get; set; }
+        public Category()
+        {
+            FleetTable = new HashSet<FleetTable>();
+        }
+
+        public int CategoryId { get; set; }
         public string Name { get; set; }
+        public DateTime DateCreated { get; set; }
+
+        public ICollection<FleetTable> FleetTable { get; set; }
     }
 }

@@ -59,11 +59,13 @@ namespace FleetManagementTest
         [Fact]
         public void RemoveFleet_Return_ResponseWithStatusofbool()
         {
-            var guid = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200");
+            var guid = new RemoveFleet()
+            {
+                FleetId = "ab2bd817-98cd-4cf3-a80a-53ea0cd9c200"
+            };
             var result = _controller.RemoveFleet(guid).Value;
             Assert.IsType<Response>(result);
         }
-
 
     }
 }

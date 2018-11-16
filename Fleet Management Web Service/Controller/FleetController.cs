@@ -5,133 +5,246 @@ using System.Net;
 using System.Threading.Tasks;
 using FleetManagementWebService;
 using FleetManagementWebService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fleet_Management_Web_Service.Controller
 {
-    [Route("v1/")]
+    [Route("v1/"), Authorize]
     [ApiController]
     public class FleetController : ControllerBase
     {
         private readonly IDataRepository _dataService;
 
-        public FleetController(IDataRepository dataService)
+        public FleetController(FleetDatabaseContext context)
         {
-            _dataService = dataService;
+            _dataService = new DataRepository(context);
         }
 
         [HttpGet]
         [Route("GetFleets")]
         public ActionResult<Response> GetFleets()
         {
-            return
-                new Response()
+            try
+            {
+                return new Response() { ResponseCode = HttpStatusCode.OK, Message = "Data retrieved successfully", Status = true, Data = _dataService.GetFleets() };
+            }
+            catch (Exception e)
+            {
+                return new Response
                 {
-                    ResponseCode = HttpStatusCode.OK,
-                    Message = "Data retrieved successfully",
-                    Status = true,
-                    Data = _dataService.GetFleets()
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
                 };
+            }
         }
 
         [HttpPost]
         [Route("AddFleet")]
-        public ActionResult<Response> AddFleet(Fleet fleet)
+        public ActionResult<Response> AddFleet(FleetTable fleet)
         {
-            fleet.Id = new Guid();
-            return new Response()
-            {
-                ResponseCode = HttpStatusCode.Created,
-                Message = "Created Successfully",
-                Data = _dataService.AddFleet(fleet),
-                Status = true
-            };               
+            try {
+
+                fleet.Id = new Guid();
+                fleet.DateAcquired = DateTime.Now;
+                fleet.DateAcquired = DateTime.Now;
+                return new Response()
+                {
+                    ResponseCode = HttpStatusCode.Created,
+                    Message = "Created Successfully",
+                    Data = _dataService.AddFleet(fleet),
+                    Status = true
+                };
+            }
+            catch (Exception e) {
+                return new Response
+                {
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
+                };
+            }
+                         
         }
 
         [HttpDelete]
         [Route("RemoveFleet")]
-        public ActionResult<Response> RemoveFleet(RemoveFleet fleetId)
+        public async Task<ActionResult<Response>> RemoveFleet(RemoveFleet fleetId)
         {
-            if (fleetId == null)
-            {
-                return new Response()
+
+            try {
+                if (fleetId == null)
                 {
-                    ResponseCode = HttpStatusCode.BadRequest,
-                    Message = "Fleet cannot be empty",
-                    Status = false
+                    return new Response()
+                    {
+                        ResponseCode = HttpStatusCode.BadRequest,
+                        Message = "Fleet cannot be empty",
+                        Status = false
+                    };
+                }
+
+                var fleet = new Guid(fleetId.FleetId);
+                var status = await _dataService.RemoveFleet(fleet);
+
+                if (status)
+                {
+                    return new Response()
+                    {
+                        ResponseCode = HttpStatusCode.OK,
+                        Message = "Removed Successfully",
+                        Status = true
+                    };
+                }
+                else
+                {
+                    return new Response()
+                    {
+                        ResponseCode = HttpStatusCode.NotFound,
+                        Message = "Removal not Successful",
+                        Status = false
+                    };
+                }
+                
+            }
+            catch (Exception e)
+            {
+                return new Response
+                {
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
                 };
             }
-
-            var fleet = new Guid(fleetId.FleetId);
-
-            if (_dataService.RemoveFleet(fleet))
-            {
-                return new Response()
-                {
-                    ResponseCode = HttpStatusCode.OK,
-                    Message = "Removed Successfully",
-                    Status = true
-                };
-            }
-            return new Response()
-            {
-                ResponseCode = HttpStatusCode.NotFound,
-                Message = "Removal not Successful",
-                Status = false
-            };
+            
         }
 
         [HttpPut]
         [Route("UpdateFleet")]
-        public ActionResult<Response> UpdateFleet(Fleet fleet)
+        public ActionResult<Response> UpdateFleet(FleetTable fleet)
         {
-           return new Response()
-           {
-               ResponseCode = HttpStatusCode.OK,
-               Data = _dataService.UpdateFleet(fleet),
-               Status = true,
-               Message = "Updated Successfully"
-           };
+            try {
+                var result = _dataService.UpdateFleet(fleet).Result;
+                if (result)
+                {
+                    return new Response()
+                    {
+                        ResponseCode = HttpStatusCode.OK,
+                        Data = result,
+                        Status = true,
+                        Message = "Updated Successfully"
+                    };
+                }
+                else
+                {
+                    return new Response
+                    {
+                        Status = false,
+                        Message = "Something went wrong from our part, and we are currently working on it.",
+                        ResponseCode = HttpStatusCode.BadRequest
+                    };
+                }
+                
+            }
+            catch (Exception e){
+                return new Response
+                {
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
+                };
+            }
+          
         }
 
         [HttpGet]
         [Route("GetCategories")]
         public ActionResult<Response> GetCategories()
         {
-            return new Response()
+            try {
+                return new Response()
+                {
+                    Data = _dataService.GetCategories(),
+                    ResponseCode = HttpStatusCode.OK,
+                    Status = true,
+                    Message = "Data retrieved successfully"
+                };
+            }
+            catch (Exception e)
             {
-                Data = _dataService.GetCategories(),
-                ResponseCode = HttpStatusCode.OK,
-                Status = true,
-                Message = "Data retrieved successfully"
-            };
+                return new Response
+                {
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
+                };
+            }
+            
         }
 
         [HttpPost]
         [Route("AddCategory")]
         public ActionResult<Response> AddCategory(Category category)
         {
-          return  new Response()
-          {
-              Data = _dataService.AddCategory(category),
-              ResponseCode = HttpStatusCode.Created,
-              Status = true,
-              Message = "Created successfully"
-          };
+            try {
+                return new Response()
+                {
+                    Data = _dataService.AddCategory(category),
+                    ResponseCode = HttpStatusCode.Created,
+                    Status = true,
+                    Message = "Created successfully"
+                };
+            }
+            catch(Exception e) {
+                return new Response
+                {
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
+                };
+            }
+          
         }
 
         [HttpDelete]
         [Route("RemoveCategory")]
-        public ActionResult<Response> RemoveCategory(RemoveCategory Id)
+        public async Task<ActionResult<Response>> RemoveCategory(RemoveCategory Id)
         {
-            return new Response()
+            try {
+                var result = await _dataService.RemoveCategory(Id.Id);
+
+                if (result)
+                {
+                    return new Response()
+                    {
+                        ResponseCode = HttpStatusCode.OK,
+                        Data = result,
+                        Status = result,
+                        Message = "Removed successfully"
+                    };
+                }
+                else
+                {
+                    return new Response
+                    {
+                        Status = result,
+                        Message = "Something went wrong from our part, and we are currently working on it.",
+                        ResponseCode = HttpStatusCode.OK
+                    };
+                }
+                
+            }
+            catch(Exception e)
             {
-                ResponseCode = HttpStatusCode.OK,
-                Data = _dataService.RemoveCategory(Id.Id),
-                Status = true,
-                Message = "Removed successfully"
-            };
+                return new Response
+                {
+                    Status = false,
+                    Message = "Something went wrong from our part, and we are currently working on it.",
+                    ResponseCode = HttpStatusCode.OK
+                };
+            }
+            
         }
     }
 }

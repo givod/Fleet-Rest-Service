@@ -6,13 +6,13 @@ using FleetManagementWebService;
 
 namespace FleetManagementTest
 {
-    public class DataRepositoryFake:IDataRepository
+    public class DataRepositoryFake
     {
         private readonly Dictionary<Guid, Fleet> _dataStore;
-        private readonly List<Category> _categories;
+        private readonly List<Categories> _categories;
         public DataRepositoryFake()
         {
-            Category cat = new Category()
+            Categories cat = new Categories()
             {
                 Id = 1,
                 Name = "Truck"
@@ -56,18 +56,18 @@ namespace FleetManagementTest
             return _dataStore[fleet.Id];
         }
 
-        public List<Category> GetCategories()
+        public List<Categories> GetCategories()
         {
             return _categories;
         }
 
-        public List<Category> AddCategory(Category category)
+        public List<Categories> AddCategory(Categories category)
         {
             _categories.Add(category);
             return _categories;
         }
 
-        public List<Category> RemoveCategory(int Id)
+        public List<Categories> RemoveCategory(int Id)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace FleetManagementTest
             }
             catch (Exception e)
             {
-                return new List<Category>();
+                return new List<Categories>();
             }
         }
 

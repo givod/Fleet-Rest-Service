@@ -2,64 +2,125 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FleetManagementWebService.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FleetManagementWebService
 {
     public class DataRepository: IDataRepository
     {
         private readonly Dictionary<Guid, Fleet> _dataStore = new Dictionary<Guid, Fleet>();
-        private readonly List<Category> _categories = new List<Category>();
+        private readonly List<Categories> _categories = new List<Categories>();
+        private readonly FleetDatabaseContext _context;
 
-        public Dictionary<Guid, Fleet> GetFleets()
+        public DataRepository(FleetDatabaseContext context)
         {
-            return _dataStore;
+            _context = context;
         }
 
-        public Fleet AddFleet(Fleet fleet)
+        
+
+        public List<FleetTable> GetFleets()
         {
-            fleet.Id = Guid.NewGuid();
-            _dataStore.Add(fleet.Id, fleet);
-            return _dataStore.FirstOrDefault(d=>d.Key == fleet.Id).Value;
+            return _context.FleetTable.ToList();
         }
 
-        public bool RemoveFleet(Guid Id)
+        public  FleetTable AddFleet(FleetTable fleet)
+        {   
+            try
+            {
+                _context.FleetTable.Add(fleet);
+               var rs = _context.SaveChanges();
+               return _context.FleetTable.FirstOrDefault(d => d.Id == fleet.Id);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        private bool FleetExists(Guid id)
         {
-           return _dataStore.Remove(Id);
+          return _context.FleetTable.Any(e => e.Id == id);
         }
 
-        public Fleet UpdateFleet(Fleet fleet)
+        public async Task<bool> RemoveFleet(Guid Id)
         {
-            _dataStore[fleet.Id] = fleet;
-            return _dataStore[fleet.Id];
+            try
+            {
+                var fleet = await _context.FleetTable.SingleOrDefaultAsync(f => f.Id == Id);
+                _context.FleetTable.Remove(fleet);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }    
         }
 
-        public Fleet GetFleetById(Guid Id)
+        public async Task<bool> UpdateFleet(FleetTable fleet)
         {
-            return _dataStore[Id];
+            try {
+        
+                _context.Entry(fleet).State = EntityState.Modified;
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public async Task<FleetTable> GetFleetById(Guid Id)
+        {
+            try
+            {
+                return await _context.FleetTable.SingleOrDefaultAsync(f => f.Id == Id);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }   
         }
 
         public List<Category> GetCategories()
         {
-            return _categories;
+            try {
+                return _context.Category.ToList();
+            }
+            catch (Exception e) {
+                throw;
+            }
         }
 
         public List<Category> AddCategory(Category category)
         {
-           _categories.Add(category);
-            return _categories;
-        }
-
-        public List<Category> RemoveCategory(int Id)
-        {
-            try
-            {
-                var category = _categories.FirstOrDefault(r => r.Id == Id);
-                _categories.Remove(category);
-                return _categories;
+            try {
+                category.DateCreated = DateTime.Now;
+                _context.Category.Add(category);
+                _context.SaveChanges();
+                return _context.Category.ToList();
             }
             catch (Exception e)
             {
-               return new List<Category>();
+                throw;
+            }
+        }
+
+        public async Task<bool> RemoveCategory(int Id)
+        {
+            try
+            {
+                var category = await _context.Category.SingleOrDefaultAsync(r => r.CategoryId == Id);
+                _context.Category.Remove(category);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
             }
         }
     }

@@ -19,6 +19,10 @@ namespace Fleet_Management_Web_Service
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(options =>
+            {
+                options.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+            })
                 .UseStartup<Startup>();
     }
 }
