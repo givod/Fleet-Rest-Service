@@ -10,8 +10,6 @@ namespace FleetManagementWebService
 {
     public class DataRepository: IDataRepository
     {
-        private readonly Dictionary<Guid, Fleet> _dataStore = new Dictionary<Guid, Fleet>();
-        private readonly List<Categories> _categories = new List<Categories>();
         private readonly FleetDatabaseContext _context;
 
         public DataRepository(FleetDatabaseContext context)
